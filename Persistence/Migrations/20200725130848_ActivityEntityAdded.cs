@@ -8,7 +8,7 @@ namespace Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Activityies",
+                name: "Activities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -21,14 +21,14 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Activityies", x => x.Id);
+                    table.PrimaryKey("PK_Activiies", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Activityies");
+                name: "Activities");
         }
     }
 }

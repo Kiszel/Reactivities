@@ -9,9 +9,9 @@ namespace Persistence
     {
         public static void SeedData(DataContext context)
         {
-            if (!context.Activityies.Any())
+            if (!context.Activities.Any())
             {
-                var activityies = new List<Activity>{
+                var activities = new List<Activity>{
 
                     new Activity
                     {
@@ -104,7 +104,7 @@ namespace Persistence
                         Venue = "Cinema",
                     }
                 };
-                context.Activityies.AddRange(activityies);
+                context.Activities.AddRange(activities);
                 context.SaveChanges(); 
             }
         }
