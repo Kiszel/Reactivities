@@ -5,6 +5,9 @@ using System.Threading;
 using Persistence;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using Application.Errors;
+using System.Net;
 
 
 namespace Application.Activities
@@ -20,6 +23,19 @@ namespace Application.Activities
         public string City { get; set; }
         public string Venue { get; set; }
         }
+        
+    public class ComandValidatior : AbstractValidator<Command>{
+
+        public ComandValidatior(){
+            RuleFor(x=>x.Title).NotEmpty();
+            RuleFor(x=>x.Description).NotEmpty();
+            RuleFor(x=>x.Category).NotEmpty();
+            RuleFor(x=>x.City).NotEmpty();
+            RuleFor(x=>x.Venue).NotEmpty();
+            RuleFor(x=>x.Date ).NotEmpty();
+
+        }
+    }
 
         public class Handler: IRequestHandler<Command>{
             private readonly DataContext _context;
@@ -30,7 +46,7 @@ namespace Application.Activities
                 var acitivity = await _context.Activities.FindAsync(request.Id);
 
                 if(acitivity==null){
-                    throw new Exception("didnt find the Activity");
+                    throw new RestException(HttpStatusCode.NotFound, new {activity="not Found"});
                 }
                 acitivity.Title = request.Title ?? acitivity.Title;
                 acitivity.Description = request.Description ?? acitivity.Description;

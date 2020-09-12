@@ -1,33 +1,42 @@
-import React from 'react'
-import { Card,Image, Button } from 'semantic-ui-react'
-import { IActivity } from '../../../app/layout/models/activity'
+import React, { useContext, useEffect } from "react";
+import { Grid } from "semantic-ui-react";
+import ActivityStore from "../../../app/api/stores/ActivitityStore";
+import { observer } from "mobx-react-lite";
+import { RouteComponentProps } from "react-router-dom";
+import { LoadingComponent } from "../../../app/layout/LoadingComponent";
+import ActivityDetailedHeader from "./ActivityDetailedHeader";
+import { ActivityDetailedChat } from "./ActivityDetailedChat";
+import { ActivityDetailedSidebar } from "./ActivityDetailedSidebar";
+import { ActivityDetailedInfo } from "./ActivityDetailedInfo";
 
-interface IActivityDetails{
-    selectedActivity: IActivity;
-    setEditMode:(editMode:boolean)=>void;
-    setSelectedActivity:(activity:IActivity|null)=>void;
-
+interface DetailParams {
+  id: string;
 }
 
-export const ActivityDetails: React.FC<IActivityDetails> = ({selectedActivity,setEditMode,setSelectedActivity}) => {
-    return (
-        <Card fluid>
-        <Image src={`assets/Images/categoryImages/${selectedActivity?.category}.jpg`} wrapped ui={false} />
-        <Card.Content>
-        <Card.Header>{selectedActivity?.title}</Card.Header>
-          <Card.Meta>
-            <span>{selectedActivity?.date}</span>
-          </Card.Meta>
-          <Card.Description>
-            {selectedActivity?.description}
-          </Card.Description>
-        </Card.Content>
-        <Card.Content extra>
-            <Button.Group widths={2}>
-                <Button basic color="blue" content="Edit" onClick={()=>setEditMode(true)}/>
-                <Button onClick={()=>setSelectedActivity(null)} basic color="grey" content="Cancel"/>
-            </Button.Group>
-        </Card.Content>
-      </Card>
-    )
-}
+const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
+  match,
+  history,
+}) => {
+  const activityStore = useContext(ActivityStore);
+  const { loadingInitial, loadActivity, activity } = activityStore;
+
+  useEffect(() => {
+    loadActivity(match.params.id);
+  }, [loadActivity, match.params.id, history]);
+
+  if (loadingInitial) return <LoadingComponent content="Loading Activity.." />;
+  if (!activity) return <h2>Activity not found</h2>;
+  return (
+    <Grid>
+      <Grid.Column width={10}>
+        <ActivityDetailedHeader activity={activity} />
+        <ActivityDetailedInfo activity={activity} />
+        <ActivityDetailedChat />
+      </Grid.Column>
+      <Grid.Column width={6}>
+        <ActivityDetailedSidebar />
+      </Grid.Column>
+    </Grid>
+  );
+};
+export default observer(ActivityDetails);
